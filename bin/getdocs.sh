@@ -7,7 +7,7 @@ fi
 
 cd $(dirname "$INDEX")
 grep -v "^ *#" $(basename "$INDEX") | while read line; do
-    echo "$DNAME"
+    read DNAME DURL <<< "$line"
     if [ ! -f "$DNAME" ] ; then
         curl -O "$DURL";
     fi
