@@ -155,22 +155,279 @@ int intrp_step(Intrp_ctx *ctx) {
     uint16_t off = ctx->prog[pc].off;
     uint32_t imm = ctx->prog[pc].imm;
     switch (op) {
+      /*** 64-bit ALU ***/
+      case 0x07: /* add dst, imm */
+        ctx->regs[dst] += imm;
+        break;
+      case 0x0f: /* add dst, src */
+        ctx->regs[dst] += ctx->regs[src];
+        break;
+      case 0x17: /* sub dst, imm */
+        ctx->regs[dst] -= imm;
+        break;
+      case 0x1f: /* sub dst, src */
+        ctx->regs[dst] -= ctx->regs[src];
+        break;
+      case 0x27: /* mul dst, imm */
+        ctx->regs[dst] *= imm;
+        break;
+      case 0x2f: /* mul dst, src */
+        ctx->regs[dst] *= ctx->regs[src];
+        break;
+      case 0x37: /* div dst, imm */
+        ctx->regs[dst] /= imm;
+        break;
+      case 0x3f: /* div dst, src */
+        ctx->regs[dst] /= ctx->regs[src];
+        break;
+      case 0x47: /* or dst, imm */
+        ctx->regs[dst] |= imm;
+        break;
+      case 0x4f: /* or dst, src */
+        ctx->regs[dst] |= ctx->regs[src];
+        break;
+      case 0x57: /* and dst, imm */
+        ctx->regs[dst] &= imm;
+        break;
+      case 0x5f: /* and dst, src */
+        ctx->regs[dst] &= ctx->regs[src];
+        break;
+      case 0x67: /* lsh dst, imm */
+        ctx->regs[dst] <<= imm;
+        break;
+      case 0x6f: /* lsh dst, src */
+        ctx->regs[dst] <<= ctx->regs[src];
+        break;
+      case 0x77: /* rsh dst, imm */
+        ctx->regs[dst] >>= imm;
+        break;
+      case 0x7f: /* rsh dst, imm */
+        ctx->regs[dst] >>= ctx->regs[src];
+        break;
+      case 0x87: /* neg dst */
+        ctx->regs[dst] = -ctx->regs[dst];
+        break;
+      case 0x97: /* mod dst, imm */
+        ctx->regs[dst] %= imm;
+        break;
+      case 0x9f: /* mod dst, src */
+        ctx->regs[dst] %= ctx->regs[src];
+        break;
+      case 0xa7: /* xor dst, imm */
+        ctx->regs[dst] ^= imm;
+        break;
+      case 0xaf: /* xor dst, src */
+        ctx->regs[dst] ^= ctx->regs[src];
+        break;
+      case 0xb7: /* mov dst, imm */
+        ctx->regs[dst] = imm;
+        break;
+      case 0xbf: /* mov dst, src */
+        ctx->regs[dst] = ctx->regs[src];
+        break;
+      case 0xc7: /* arsh dst, imm */
+        ctx->regs[dst] = (int64_t)ctx->regs[dst] >> (int64_t)imm;
+        break;
+      case 0xcf:
+        ctx->regs[dst] = (int64_t)ctx->regs[dst] >> (int64_t)ctx->regs[src];
+        break;
+
+      /*** 32-bit ALU ***/
+      case 0x04: /* add32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] + imm;
+        break;
+      case 0x0c: /* add32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] + (uint32_t)ctx->regs[src];
+        break;
+      case 0x14: /* sub32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] - imm;
+        break;
+      case 0x1c: /* sub32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] - (uint32_t)ctx->regs[src];
+        break;
+      case 0x24: /* mul32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] * imm;
+        break;
+      case 0x2c: /* mul32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] * (uint32_t)ctx->regs[src];
+        break;
+      case 0x34: /* div32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] / imm;
+        break;
+      case 0x3c: /* div32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] / (uint32_t)ctx->regs[src];
+        break;
+      case 0x44: /* or32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] | imm;
+        break;
+      case 0x4c: /* or32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] | (uint32_t)ctx->regs[src];
+        break;
+      case 0x54: /* and32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] & imm;
+        break;
+      case 0x5c: /* and32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] & (uint32_t)ctx->regs[src];
+        break;
+      case 0x64: /* lsh32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] << imm;
+        break;
+      case 0x6c: /* lsh32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] << (uint32_t)ctx->regs[src];
+        break;
+      case 0x74: /* rsh32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] >> imm;
+        break;
+      case 0x7c: /* rsh32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] >> (uint32_t)ctx->regs[src];
+        break;
+      case 0x84: /* neg32 dst, imm */
+        ctx->regs[dst] = -(uint32_t)ctx->regs[dst];
+        break;
+      case 0x94: /* mod32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] % imm;
+        break;
+      case 0x9c: /* mod32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] % (uint32_t)ctx->regs[src];
+        break;
+      case 0xa4: /* xor32 dst, imm */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] ^ imm;
+        break;
+      case 0xac: /* xor32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[dst] ^ (uint32_t)ctx->regs[src];
+        break;
+      case 0xb4: /* mov32 dst, imm */ /* Is this different from mov ? */
+        ctx->regs[dst] = imm;
+        break;
+      case 0xbc: /* mov32 dst, src */
+        ctx->regs[dst] = (uint32_t)ctx->regs[src];
+        break;
+      case 0xc4: /* arsh32 dst, imm */
+        ctx->regs[dst] = (int32_t)ctx->regs[dst] >> (int32_t)imm;
+        break;
+      case 0xcc: /* arsh32 dst, src */
+        ctx->regs[dst] = (int32_t)ctx->regs[dst] >> (int32_t)ctx->regs[src];
+        break;
+
+
+      /*** Branch ***/
+      case 0x05: /* j +off */
+        ctx->pc += off;
+        break;
       case 0x15: /* jeq dst, imm, +off */
         if (ctx->regs[dst] == imm) {
             ctx->pc += off;
         }
         break;
-      case 0x67: /* lsh dst, imm */
-        ctx->regs[dst] <<= imm;
+      case 0x1d: /* jeq dst, src, +off */
+        if (ctx->regs[dst] == ctx->regs[src]) {
+            ctx->pc += off;
+        }
         break;
-      case 0x77: /* rsh dst, imm */
-        ctx->regs[dst] >>= imm;
+      case 0x25: /* jgt dst, imm, +off */
+        if (ctx->regs[dst] > imm) {
+            ctx->pc += off;
+        }
         break;
-      case 0xb7: /* mov dst, imm */
-        ctx->regs[dst] = imm;
+      case 0x2d: /* jgt dst, src, +off */
+        if (ctx->regs[dst] > ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x35: /* jge dst, imm, +off */
+        if (ctx->regs[dst] >= imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x3d: /* jge dst, src, +off */
+        if (ctx->regs[dst] >= ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xa5: /* jlt dst, imm, +off */
+        if (ctx->regs[dst] < imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xad: /* jlt dst, src, +off */
+        if (ctx->regs[dst] < ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xb5: /* jle dst, imm, +off */
+        if (ctx->regs[dst] <= imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xbd: /* jle dst, src, +off */
+        if (ctx->regs[dst] <= ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x45: /* jset dst, imm, +off */
+        if (ctx->regs[dst] & imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x4d: /* jset dst, src, +off */
+        if (ctx->regs[dst] & ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x55: /* jne dst, imm, +off */
+        if (ctx->regs[dst] != imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x5d: /* jne dst, src, +off */
+        if (ctx->regs[dst] != ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x65: /* jsgt dst, imm, +off */
+        if ((int64_t)ctx->regs[dst] > (int64_t)imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x6d: /* jsgt dst, src, +off */
+        if ((int64_t)ctx->regs[dst] > (int64_t)ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x75: /* jsge dst, imm, +off */
+        if ((int64_t)ctx->regs[dst] >= (int64_t)imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0x7d: /* jsge dst, src, +off */
+        if ((int64_t)ctx->regs[dst] >= (int64_t)ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xc5: /* jslt dst, imm, +off */
+        if ((int64_t)ctx->regs[dst] < (int64_t)imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xcd: /* jslt dst, src, +off */
+        if ((int64_t)ctx->regs[dst] < (int64_t)ctx->regs[src]) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xd5: /* jsle dst, imm, +off */
+        if ((int64_t)ctx->regs[dst] <= (int64_t)imm) {
+            ctx->pc += off;
+        }
+        break;
+      case 0xdd: /* jsle dst, src, +off */
+        if ((int64_t)ctx->regs[dst] <= (int64_t)ctx->regs[src]) {
+            ctx->pc += off;
+        }
         break;
       case 0x95: /* exit */
         return 1;
+
+      case 0x85:
       default:
         fprintf(stderr, "Operation not implemented: 0x%02x\n", op);
         return -1;
