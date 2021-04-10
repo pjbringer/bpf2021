@@ -445,6 +445,7 @@ static void intrp_free(Intrp_ctx *ctx) {
 }
 
 #ifdef TEST
+#include <inttypes.h>
 
 #define FAIL() do { fprintf(stderr, "FAILED at line %d\n", __LINE__); return -1; } while(0)
 
@@ -477,7 +478,7 @@ int main() {
 
     rc = intrp_stop(ctx, &rv);
     if (rc) FAIL();
-    printf("Called BPF program on 40: %llu\n", rv);
+    printf("Called BPF program on 40: %" PRIu64 "\n", rv);
 
     rc = intrp_start(ctx, 42);
     if (rc) FAIL();
@@ -491,7 +492,7 @@ int main() {
 
     rc = intrp_stop(ctx, &rv);
     if (rc) FAIL();
-    printf("Called BPF program on 42: %llu\n", rv);
+    printf("Called BPF program on 42: %" PRIu64 "\n", rv);
 
     rc = intrp_delete(&ctx);
     if (rc) FAIL();
