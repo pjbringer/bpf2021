@@ -1,0 +1,1 @@
+- Find a good solution to build or clean all from top, and preferably in parallel

@@ -2,3 +2,4 @@ docs/external/*
 archives/*
 *.swp
 *.swo
+status.rst
