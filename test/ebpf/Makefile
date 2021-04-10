@@ -3,6 +3,6 @@
 
 CFLAGS=-g3 -Wall -Wextra -Og
 
-all: bpfasm
+all: ebpf
 clean:
-	$(RM) bpfasm
+	$(RM) ebpf
