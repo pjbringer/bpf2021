@@ -7,5 +7,5 @@ all: ebpf
 clean:
 	$(RM) ebpf
 
-ebpf: ebpf.c ../../obj/einterpreter.o
-	$(CC) $(CFLAGS) -o $@ $^
+ebpf: ebpf.c ../../src/interpreter.h ../../src/einterpreter.c
+	$(CC) $(CFLAGS) -o $@ $<

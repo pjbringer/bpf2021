@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "interpreter.h"
+#include "einterpreter.c"
 
 static const bool ops_exists[256] = {
         /* 0x.0 */                  /* 0x0.4 */                   /* Ox.8 */                  /* 0x.C */
@@ -42,15 +42,40 @@ static const instruction prog1[] = {
 };
 static const size_t plen1 = sizeof(prog1)/sizeof(prog1[0]);
 
+static const uint32_t retv2 = 42;
+static const instruction prog2[] = {
+    {0xb4, 0x1, 0x0, 0x0000, 0x00000014}, // Mov R1 20=(0x14)
+    {0xb4, 0x5, 0x0, 0x0000, 0x00000016}, // Mov R5 22=(0x16)
+    {0xb5, 0x0, 0x0, 0x0000, 0x00000000}, // Mov R0 0
+    {0x0f, 0x0, 0x1, 0x0000, 0x00000000}, // Add R0 R1 (R0 += R1)
+    {0x0f, 0x0, 0x5, 0x0000, 0x00000000}, // Add R0 R5
+    {0xb5, 0x0, 0x0, 0x0000, 0x00000000}, // Exit (ie Return R0)
+};
+static const size_t plen2 = sizeof(prog2)/sizeof(prog2[0]);
+
+static const uint32_t retv3 = 112;
+static const instruction prog3[] = {
+    {0xb4, 0x1, 0x0, 0x0000, 0x000000A}, // Mov R1 10
+    {0x07, 0x1, 0x0, 0x0000, 0x0000002}, // Add R1 2
+    {0xb4, 0x2, 0x0, 0x0000, 0x0000001}, // Mov R2 1
+    {0x27, 0x2, 0x0, 0x0000, 0x0000002}, // Mul R2 2
+    {0xbc, 0x3, 0x1, 0x0000, 0x0000000}, // Mov R3 R1  (=12)
+    {0x1f, 0x3, 0x2, 0x0000, 0x0000000}, // Sub R3 R2
+    {0x2c, 0x3, 0x3, 0x0000, 0x0000000}, // Mul32 R3 R3  (=100)
+    {0xbc, 0x0, 0x3, 0x0000, 0x0000000}, // Mov R0 R3
+    {0x0c, 0x0, 0x1, 0x0000, 0x0000000}, // Add32 R0 R1
+    {0xb5, 0x0, 0x0, 0x0000, 0x00000000}, // Exit (ie Return R0)
+};
+static const size_t plen3 = sizeof(prog3)/sizeof(prog3[0]);
 
 static const uint32_t retv[] = {
-    retv0, retv1,
+    retv0, retv1, retv2, retv3
 };
 static const instruction* prog[] = {
-    prog0, prog1,
+    prog0, prog1, prog2, prog3,
 };
 static const size_t plen[] = {
-    plen0, plen1,
+    plen0, plen1, plen2, plen3
 };
 static const size_t prog_count = sizeof(prog)/sizeof(prog[0]);
 static_assert(sizeof(retv)/sizeof(retv[0]) == sizeof(prog)/sizeof(prog[0]));
@@ -100,7 +125,15 @@ static int run_tests() {
             ret = -1;
             break;
         }
-        while ((rc = intrp_step(ctx)) == 0) { /* Nothing */ }
+        int16_t prevpc = ctx->pc;
+        while ((rc = intrp_step(ctx)) == 0) {
+            // At this point we successfully interpreted the instruction at PC prevpc
+            // Let's just mark it as worked through.
+            ops_tested[prog[i][prevpc].op]++;
+            static_assert(sizeof(prog[i][prevpc].op) == 1);
+            static_assert(sizeof(ops_tested)/sizeof(ops_tested[0]) == 256);
+            prevpc = ctx->pc;
+        }
         if (rc < 0) {
             printf("Program %d failed execution: %d\n", i, rc);
             ret = -1;
@@ -130,6 +163,6 @@ static int run_tests() {
 int main() {
 
     run_tests();
-    print_missing_coverage();
+    // print_missing_coverage();
     return 0;
 }

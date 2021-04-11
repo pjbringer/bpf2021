@@ -1,8 +1,10 @@
 .PHONY: all clean
 
-CFLAGS:=-Wall -O1 -g3
+CFLAGS:=-Wall -Wextra -O1 -g3
 
 all: einterpreter ../obj/einterpreter.o
+clean:
+	$(RM) einterpreter ../obj/einterpreter.o
 
 einterpreter: einterpreter.c interpreter.h
 	$(CC) $(CFLAGS) -DTEST -o $@ $<
