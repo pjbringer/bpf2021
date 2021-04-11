@@ -78,7 +78,7 @@ int intrp_create(Intrp_ctx **ctx, const instruction *prog, int16_t pl) {
     c->pc = -1; 
     memset(c->regs, 0, sizeof(c->regs));
     uint32_t BPFd = ('B' << 0) | ('P' << 8) | ('F' << 16) | ('.' << 24);
-    for (int i = 0; i < sizeof(c->stack)/sizeof(*c->stack); i++) { // XXX : Pick an ARRAY_SIZE macro and use it
+    for (size_t i = 0; i < sizeof(c->stack)/sizeof(*c->stack); i++) { // XXX : Pick an ARRAY_SIZE macro and use it
         c->stack[i] = BPFd;
     }
 
