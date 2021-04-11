@@ -439,7 +439,7 @@ static void intrp_free(Intrp_ctx *ctx) {
 int main() {
     Intrp_ctx *ctx;
     int rc;
-    uint64_t rv;
+    uint32_t rv;
 
     instruction prog[] = {
       { .op=0x67, .dst=0x1, .src=0x0, .off = 0x0000, .imm=0x00000020},
@@ -465,7 +465,7 @@ int main() {
 
     rc = intrp_stop(ctx, &rv);
     if (rc) FAIL();
-    printf("Called BPF program on 40: %" PRIu64 "\n", rv);
+    printf("Called BPF program on 40: %" PRIu32 "\n", rv);
 
     rc = intrp_start(ctx, 42);
     if (rc) FAIL();
@@ -479,7 +479,7 @@ int main() {
 
     rc = intrp_stop(ctx, &rv);
     if (rc) FAIL();
-    printf("Called BPF program on 42: %" PRIu64 "\n", rv);
+    printf("Called BPF program on 42: %" PRIu32 "\n", rv);
 
     rc = intrp_delete(&ctx);
     if (rc) FAIL();
