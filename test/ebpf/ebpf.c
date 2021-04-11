@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#include "interpreter.h"
+
 static const bool ops_exists[256] = {
         /* 0x.0 */                  /* 0x0.4 */                   /* Ox.8 */                  /* 0x.C */
 /* 0x0. */ false, false, false, false, true , true , false, true ,   false, false, false, false, true , false, false, true ,

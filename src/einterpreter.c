@@ -23,15 +23,8 @@ Bibliography
 #include <stdio.h>   /* To remove in favor of proper error reporting */
 #include <stdlib.h>  /* Malloc/free */
 #include <string.h>  /* Memset      */
-#include "interpreter.h"
 
-typedef struct {
-    uint8_t  op;
-    uint8_t  dst:4;
-    uint8_t  src:4;
-    uint16_t off;
-    uint32_t imm;
-} instruction;
+#include "interpreter.h"
 
 #define    MAXINST     4096  /* Maximum program length. Where is this from?  */
 #define    STACK_SZ     512  /* BPF prog. stack size. Where is this from?    */
@@ -39,21 +32,15 @@ typedef struct {
 
 /* Internal structures */
 
-typedef struct {
-    instruction *prog;
+struct Intrp_ctx_{ // This structure get typedef'd in interpreter.h
+    const instruction *prog;
     int16_t pl;              /* Length of the program (in instructions)      */
     int16_t  pc;             /* Program counter in [-1;pl[                   */
     uint64_t regs[10];
     uint64_t sp;
     uint32_t stack[STACK_SZ/sizeof(uint32_t)];   /* Uint32_t for alignement  */
-} Intrp_ctx;
+};
 
-
-int intrp_create(Intrp_ctx **ctx, instruction *prog, int16_t pl);
-int intrp_delete(Intrp_ctx **ctx);
-int intrp_start(Intrp_ctx *ctx, uintptr_t);
-int intrp_stop(Intrp_ctx *ctx, uintptr_t*);
-int intrp_step(Intrp_ctx *ctx);
 
 static Intrp_ctx* intrp_alloc();
 static void intrp_free(Intrp_ctx*);
@@ -61,7 +48,7 @@ static void intrp_free(Intrp_ctx*);
 /* Code */
 
 // XXX : Error cases: invalid parameters, program validation failure, allocation failure
-int intrp_create(Intrp_ctx **ctx, instruction *prog, int16_t pl) {
+int intrp_create(Intrp_ctx **ctx, const instruction *prog, int16_t pl) {
     Intrp_ctx *c;
 
     /* Step 1: Validate basic properties of the BPF program */
@@ -125,7 +112,7 @@ int intrp_start(Intrp_ctx *ctx, uintptr_t arg) {
     return 0;
 }
 
-int intrp_stop(Intrp_ctx *ctx, uintptr_t *arg) {
+int intrp_stop(Intrp_ctx *ctx, uint32_t *arg) {
     if (ctx == NULL) {
         return -1;
     }
